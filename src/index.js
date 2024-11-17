@@ -1,10 +1,12 @@
+import DOCS from './help.html'
+
 addEventListener("fetch", (event) => {
   event.passThroughOnException();
   event.respondWith(handleRequest(event.request));
 });
 
-import DOCS from './help.html'
- 
+
+
 // return docs
 if (url.pathname === "/") {
   return new Response(DOCS, {
