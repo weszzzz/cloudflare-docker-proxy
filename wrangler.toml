@@ -1,15 +1,15 @@
 name = "cloudflare-docker-proxy"
-compatibility_date = "2024-01-01"  # 建议更新到最新的兼容性日期
+compatibility_date = "2024-01-01"
+main = "src/index.js"
 
-main = "src/index.js"  # 明确指定入口文件
-compatibility_flags = ["nodejs_compat"]  # 如果需要 Node.js 兼容性
+# 删除顶层的 routes 配置
+# [routes]
+# pattern = "*.wesz.fun"
+# custom_domain = true
 
-[vars]
-CUSTOM_DOMAIN = "wesz.fun"
-
-[routes]
-pattern = "*.wesz.fun"
-custom_domain = true
+# 删除顶层的 vars
+# [vars]
+# CUSTOM_DOMAIN = "wesz.fun"
 
 [env.production]
 name = "cloudflare-docker-proxy"
@@ -26,3 +26,4 @@ routes = [
 [env.production.vars]
 MODE = "production"
 TARGET_UPSTREAM = ""
+CUSTOM_DOMAIN = "wesz.fun"  # 将 CUSTOM_DOMAIN 移到这里
