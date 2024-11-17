@@ -1,22 +1,8 @@
 import DOCS from './help.html'
 
-addEventListener("fetch", (event) => {
-  event.passThroughOnException();
-  event.respondWith(handleRequest(event.request));
-});
-
-
-
-// return docs
-if (url.pathname === "/") {
-  return new Response(DOCS, {
-    status: 200,
-    headers: {
-      "content-type": "text/html"
-    }
-  });
-}
-
+// 常量定义
+const MODE = typeof MODE !== 'undefined' ? MODE : 'production';
+const TARGET_UPSTREAM = typeof TARGET_UPSTREAM !== 'undefined' ? TARGET_UPSTREAM : '';
 const dockerHub = "https://registry-1.docker.io";
 
 const routes = {
@@ -34,18 +20,26 @@ const routes = {
   "docker-staging.wesz.fun": dockerHub
 };
 
-function routeByHosts(host) {
-  if (host in routes) {
-    return routes[host];
-  }
-  if (MODE == "debug") {
-    return TARGET_UPSTREAM;
-  }
-  return "";
-}
+// 事件监听器
+addEventListener("fetch", (event) => {
+  event.passThroughOnException();
+  event.respondWith(handleRequest(event.request));
+});
 
+// 主要请求处理函数
 async function handleRequest(request) {
   const url = new URL(request.url);
+  
+  // 处理根路径文档请求
+  if (url.pathname === "/") {
+    return new Response(DOCS, {
+      status: 200,
+      headers: {
+        "content-type": "text/html"
+      }
+    });
+  }
+
   const upstream = routeByHosts(url.hostname);
   if (upstream === "") {
     return new Response(
@@ -57,8 +51,10 @@ async function handleRequest(request) {
       }
     );
   }
+
   const isDockerHub = upstream == dockerHub;
   const authorization = request.headers.get("Authorization");
+
   if (url.pathname == "/v2/") {
     const newUrl = new URL(upstream + "/v2/");
     const headers = new Headers();
@@ -76,6 +72,7 @@ async function handleRequest(request) {
     }
     return resp;
   }
+
   // get token
   if (url.pathname == "/v2/auth") {
     const newUrl = new URL(upstream + "/v2/");
@@ -103,6 +100,7 @@ async function handleRequest(request) {
     }
     return await fetchToken(wwwAuthenticate, scope, authorization);
   }
+
   // redirect for DockerHub library images
   // Example: /v2/busybox/manifests/latest => /v2/library/busybox/manifests/latest
   if (isDockerHub) {
@@ -114,7 +112,8 @@ async function handleRequest(request) {
       return Response.redirect(redirectUrl, 301);
     }
   }
-  // foward requests
+
+  // forward requests
   const newUrl = new URL(upstream + url.pathname);
   const newReq = new Request(newUrl, {
     method: request.method,
@@ -128,9 +127,19 @@ async function handleRequest(request) {
   return resp;
 }
 
+// 辅助函数
+function routeByHosts(host) {
+  if (host in routes) {
+    return routes[host];
+  }
+  if (MODE == "debug") {
+    return TARGET_UPSTREAM;
+  }
+  return "";
+}
+
 function parseAuthenticate(authenticateStr) {
   // sample: Bearer realm="https://auth.ipv6.docker.com/token",service="registry.docker.io"
-  // match strings after =" and before "
   const re = /(?<=\=")(?:\\.|[^"\\])*(?=")/g;
   const matches = authenticateStr.match(re);
   if (matches == null || matches.length < 2) {
@@ -158,7 +167,7 @@ async function fetchToken(wwwAuthenticate, scope, authorization) {
 }
 
 function responseUnauthorized(url) {
-  const headers = new(Headers);
+  const headers = new Headers();
   if (MODE == "debug") {
     headers.set(
       "Www-Authenticate",
@@ -175,4 +184,3 @@ function responseUnauthorized(url) {
     headers: headers,
   });
 }
-
