@@ -1,39 +1,28 @@
 name = "cloudflare-docker-proxy"
-compatibility_date = "2023-12-01"
+compatibility_date = "2024-01-01"  # 建议更新到最新的兼容性日期
 
-[dev]
-ip = "0.0.0.0"
-port = 8787
-local_protocol = "http"
+main = "src/index.js"  # 明确指定入口文件
+compatibility_flags = ["nodejs_compat"]  # 如果需要 Node.js 兼容性
 
-[env.vars]
+[vars]
 CUSTOM_DOMAIN = "wesz.fun"
 
-[env.dev.vars]
-MODE = "debug"
-TARGET_UPSTREAM = "https://registry-1.docker.io"
+[routes]
+pattern = "*.wesz.fun"
+custom_domain = true
 
 [env.production]
 name = "cloudflare-docker-proxy"
- routes = [
-   { pattern = "docker.wesz.fun", custom_domain = true },
-   { pattern = "quay.wesz.fun", custom_domain = true },
-   { pattern = "gcr.wesz.fun", custom_domain = true },
-   { pattern = "k8s-gcr.wesz.fun", custom_domain = true },
-   { pattern = "k8s.wesz.fun", custom_domain = true },
-   { pattern = "ghcr.wesz.fun", custom_domain = true },
-  { pattern = "cloudsmith.wesz.fun", custom_domain = true },
- ]
+routes = [
+  { pattern = "docker.wesz.fun", custom_domain = true },
+  { pattern = "quay.wesz.fun", custom_domain = true },
+  { pattern = "gcr.wesz.fun", custom_domain = true },
+  { pattern = "k8s-gcr.wesz.fun", custom_domain = true },
+  { pattern = "k8s.wesz.fun", custom_domain = true },
+  { pattern = "ghcr.wesz.fun", custom_domain = true },
+  { pattern = "cloudsmith.wesz.fun", custom_domain = true }
+]
 
 [env.production.vars]
 MODE = "production"
 TARGET_UPSTREAM = ""
-
-[env.staging]
-name = "cloudflare-docker-proxy-staging"
- route = { pattern = "docker-staging.wesz.fun", custom_domain = true }
-
-[env.staging.vars]
-MODE = "staging"
-TARGET_UPSTREAM = ""
-
