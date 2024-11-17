@@ -15,15 +15,15 @@ TARGET_UPSTREAM = "https://registry-1.docker.io"
 
 [env.production]
 name = "cloudflare-docker-proxy"
-# routes = [
-#   { pattern = "docker.wesz.fun", custom_domain = true },
-#   { pattern = "quay.wesz.fun", custom_domain = true },
-#   { pattern = "gcr.wesz.fun", custom_domain = true },
-#   { pattern = "k8s-gcr.wesz.fun", custom_domain = true },
-#   { pattern = "k8s.wesz.fun", custom_domain = true },
-#   { pattern = "ghcr.wesz.fun", custom_domain = true },
-#   { pattern = "cloudsmith.wesz.fun", custom_domain = true },
-# ]
+ routes = [
+   { pattern = "docker.wesz.fun", custom_domain = true },
+   { pattern = "quay.wesz.fun", custom_domain = true },
+   { pattern = "gcr.wesz.fun", custom_domain = true },
+   { pattern = "k8s-gcr.wesz.fun", custom_domain = true },
+   { pattern = "k8s.wesz.fun", custom_domain = true },
+   { pattern = "ghcr.wesz.fun", custom_domain = true },
+  { pattern = "cloudsmith.wesz.fun", custom_domain = true },
+ ]
 
 [env.production.vars]
 MODE = "production"
@@ -31,8 +31,9 @@ TARGET_UPSTREAM = ""
 
 [env.staging]
 name = "cloudflare-docker-proxy-staging"
-# route = { pattern = "docker-staging.wesz.fun", custom_domain = true }
+ route = { pattern = "docker-staging.wesz.fun", custom_domain = true }
 
 [env.staging.vars]
 MODE = "staging"
 TARGET_UPSTREAM = ""
+
